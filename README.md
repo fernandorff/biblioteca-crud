@@ -37,6 +37,8 @@ docker compose up
 docker compose down
 ```
 
+---
+
 5 - **Destruir os containers, volumes e imagens**:
 ```bash
 docker compose down --rmi all --volumes
