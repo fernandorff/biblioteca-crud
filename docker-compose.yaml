@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: sisgal-postgres
+    environment:
+      POSTGRES_DB: sisgal
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - sisgal-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sisgal"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  sisgal-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sisgal-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/sisgal
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SERVER_SERVLET_CONTEXT_PATH: /
+    ports:
+      - "8080:8080"
+    networks:
+      - sisgal-network
+
+volumes:
+  postgres_data:
+
+networks:
+  sisgal-network:
+    driver: bridge
