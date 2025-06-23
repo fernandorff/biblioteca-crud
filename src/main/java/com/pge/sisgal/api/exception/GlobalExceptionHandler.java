@@ -32,6 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
         IllegalArgumentException.class,
+        IllegalStateException.class,
         BadCredentialsException.class,
         UsernameNotFoundException.class
     })
